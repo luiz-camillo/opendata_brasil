@@ -5,7 +5,7 @@ brasileiros. Consome APIs oficiais do governo federal e apresenta os
 dados em uma interface moderna inspirada em ferramentas de Business
 Intelligence.
 
-🔗 **Live demo:** `https://<seu-usuario>.github.io/opendata-brasil/`
+🔗 **Live demo:** `https://luiz-camillo.github.io/opendata_brasil/`
 
 ## Objetivo
 
@@ -90,8 +90,8 @@ INMET, DATASUS, etc.) sem reestruturar o projeto.
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/<seu-usuario>/opendata-brasil.git
-cd opendata-brasil
+git clone https://github.com/luiz-camillo/opendata_brasil.git
+cd opendata_brasil
 
 # 2. Instale as dependências
 npm install
@@ -111,7 +111,7 @@ npm run build
 1. Certifique-se de que o repositório remoto está configurado:
 
 ```bash
-git remote add origin https://github.com/<seu-usuario>/opendata-brasil.git
+git remote add origin https://github.com/luiz-camillo/opendata_brasil.git
 ```
 
 2. Execute o deploy:

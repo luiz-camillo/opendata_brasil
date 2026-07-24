@@ -11,6 +11,7 @@
     "test": "vitest run",
     "deploy": "gh-pages -d dist"
   },
+  "homepage": "https://luiz-camillo.github.io/opendata_brasil/",
   "dependencies": {
     "@tanstack/react-virtual": "^3.14.8",
     "chart.js": "^4.5.1",
