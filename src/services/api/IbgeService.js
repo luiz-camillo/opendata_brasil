@@ -241,12 +241,20 @@ export class IbgeService extends DataSourceService {
    * @param {number[]} localidades municipio IBGE ids (N6 level)
    * @param {string} periodos e.g. '-1', '-6', '2010'
    * @param {string} [variavel] variable id within the aggregate
+   * @param {Array<{ id: string, categorias: string[] }>} [classificacoes] optional SIDRA classifications
    * @returns {Promise<ApiResponse>}
    */
-  async buscarAgregado(agregadoId, localidades, periodos, variavel = '') {
+  async buscarAgregado(agregadoId, localidades, periodos, variavel = '', classificacoes = []) {
     const controller = this._novoControllerPara(`buscarAgregado:${agregadoId}:${variavel}`)
     const localidadesStr = (localidades ?? []).join('|')
-    const url = `${BASE_URL}/v3/agregados/${agregadoId}/periodos/${periodos}/variaveis/${variavel}?localidades=N6[${localidadesStr}]`
+    let url = `${BASE_URL}/v3/agregados/${agregadoId}/periodos/${periodos}/variaveis/${variavel}?localidades=N6[${localidadesStr}]`
+
+    if (classificacoes.length > 0) {
+      const classificacoesStr = classificacoes
+        .map((c) => `${c.id}[${c.categorias.join(',')}]`)
+        .join('|')
+      url += `&classificacao=${classificacoesStr}`
+    }
 
     const dados = await this._fetchWithRetry(url, controller.signal)
 

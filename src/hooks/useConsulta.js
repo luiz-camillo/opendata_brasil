@@ -11,12 +11,14 @@ import { IbgeService } from '../services/api/IbgeService'
  *   municipios: import('../models/Municipio').Municipio[],
  *   indicadores: string[],
  *   selecionados: number[],
+ *   periodo: string|null,
  *   dataset: import('../models/Dataset').Dataset|null,
  *   loading: boolean,
  *   error: string|null,
  *   buscarMunicipios: (query: string) => Promise<void>,
  *   selecionarMunicipio: (id: number) => void,
  *   selecionarIndicadores: (ids: string[]) => void,
+ *   selecionarPeriodo: (periodo: string|null) => void,
  *   buscarDados: () => Promise<void>,
  *   limpar: () => void
  * }}
@@ -25,6 +27,7 @@ export function useConsulta() {
   const [municipios, setMunicipios] = useState([])
   const [selecionados, setSelecionados] = useState([])
   const [indicadores, setIndicadores] = useState([])
+  const [periodo, setPeriodo] = useState(null)
   const [dataset, setDataset] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -43,6 +46,7 @@ export function useConsulta() {
       if (ativo && ultima) {
         setSelecionados(ultima.municipios ?? [])
         setIndicadores(ultima.indicadores ?? [])
+        setPeriodo(ultima.periodo ?? null)
       }
     }
 
@@ -93,6 +97,10 @@ export function useConsulta() {
     setIndicadores(ids)
   }, [])
 
+  const selecionarPeriodo = useCallback((novoPeriodo) => {
+    setPeriodo(novoPeriodo)
+  }, [])
+
   /**
    * @returns {Promise<void>}
    */
@@ -105,14 +113,14 @@ export function useConsulta() {
     setLoading(true)
     setError(null)
     try {
-      const resultado = await controllerRef.current.executar(selecionados, indicadores)
+      const resultado = await controllerRef.current.executar(selecionados, indicadores, periodo)
       setDataset(resultado)
     } catch (erro) {
       setError(erro?.message ?? 'Falha ao buscar dados')
     } finally {
       setLoading(false)
     }
-  }, [selecionados, indicadores])
+  }, [selecionados, indicadores, periodo])
 
   /**
    * Resets all state back to its initial values.
@@ -122,6 +130,7 @@ export function useConsulta() {
     setMunicipios([])
     setSelecionados([])
     setIndicadores([])
+    setPeriodo(null)
     setDataset(null)
     setError(null)
   }, [])
@@ -130,12 +139,14 @@ export function useConsulta() {
     municipios,
     indicadores,
     selecionados,
+    periodo,
     dataset,
     loading,
     error,
     buscarMunicipios,
     selecionarMunicipio,
     selecionarIndicadores,
+    selecionarPeriodo,
     buscarDados,
     limpar,
   }

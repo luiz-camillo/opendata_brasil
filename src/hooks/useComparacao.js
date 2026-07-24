@@ -12,7 +12,7 @@ import { ComparacaoController } from '../controllers/ComparacaoController'
  *   error: string|null,
  *   setMunicipioA: (id: number|null) => void,
  *   setMunicipioB: (id: number|null) => void,
- *   comparar: (indicadorIds: string[]) => Promise<void>
+ *   comparar: (indicadorIds?: string[], periodo?: string|null) => Promise<void>
  * }}
  */
 export function useComparacao() {
@@ -25,11 +25,12 @@ export function useComparacao() {
   const controllerRef = useRef(new ComparacaoController())
 
   /**
-   * @param {string[]} indicadorIds
+   * @param {string[]} [indicadorIds]
+   * @param {string|null} [periodo]
    * @returns {Promise<void>}
    */
   const comparar = useCallback(
-    async (indicadorIds) => {
+    async (indicadorIds = [], periodo = null) => {
       if (municipioA == null || municipioB == null) {
         setError('Selecione dois municípios para comparar.')
         return
@@ -38,7 +39,7 @@ export function useComparacao() {
       setLoading(true)
       setError(null)
       try {
-        const dados = await controllerRef.current.comparar(municipioA, municipioB, indicadorIds)
+        const dados = await controllerRef.current.comparar(municipioA, municipioB, indicadorIds, periodo)
         setResultado(dados)
       } catch (erro) {
         setError(erro?.message ?? 'Falha ao comparar municípios')

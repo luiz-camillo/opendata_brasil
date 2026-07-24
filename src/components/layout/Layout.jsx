@@ -1,7 +1,13 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import { routes } from '../../config/routes'
 import Sidebar from './Sidebar'
 import styles from './Layout.module.css'
+
+const EXTERNAL_LINKS = [
+  { label: 'APIs Públicas', to: '/apis' },
+  { label: 'GitHub', href: 'https://github.com' },
+]
 
 /**
  * Layout is the top-level application shell: header with branding and
@@ -12,6 +18,8 @@ import styles from './Layout.module.css'
  */
 function Layout({ children }) {
   const [isSidebarOpen, setSidebarOpen] = useState(false)
+  const location = useLocation()
+  const currentRoute = routes.find((route) => route.path === location.pathname)
 
   return (
     <div className={styles.shell}>
@@ -24,15 +32,19 @@ function Layout({ children }) {
         </Link>
 
         <nav className={styles.headerNav} aria-label="Navegação superior">
-          <Link className={styles.headerLink} to="/">
-            Home
-          </Link>
-          <Link className={styles.headerLink} to="/dashboard">
-            Dashboard
-          </Link>
-          <Link className={styles.headerLink} to="/explorer">
-            Data Explorer
-          </Link>
+          {routes
+            .filter((route) => route.showInHeader !== false)
+            .map((route) => (
+              <Link
+                key={route.path}
+                className={`${styles.headerLink} ${
+                  location.pathname === route.path ? styles.headerLinkActive : ''
+                }`}
+                to={route.path}
+              >
+                {route.label}
+              </Link>
+            ))}
         </nav>
 
         <button
@@ -46,17 +58,62 @@ function Layout({ children }) {
       </header>
 
       <div className={styles.body}>
-        <Sidebar
-          isOpen={isSidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-        />
-        <main className={styles.content}>{children}</main>
+        <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <main className={styles.content}>
+          {currentRoute && currentRoute.path !== '/' && (
+            <nav className={styles.breadcrumb} aria-label="Breadcrumb">
+              <Link to="/" className={styles.breadcrumbLink}>
+                Home
+              </Link>
+              <span className={styles.breadcrumbSeparator}>/</span>
+              <span className={styles.breadcrumbCurrent}>{currentRoute.label}</span>
+            </nav>
+          )}
+          {children}
+        </main>
       </div>
 
       <footer className={styles.footer}>
-        <p>
-          OpenData Brasil &copy; {new Date().getFullYear()} — Dados públicos
-          abertos e acessíveis.
+        <div className={styles.footerContent}>
+          <div className={styles.footerBrand}>
+            <span className={styles.brandIcon} aria-hidden="true">
+              🇧🇷
+            </span>
+            OpenData Brasil
+            <p className={styles.footerTagline}>Dados públicos abertos e acessíveis.</p>
+          </div>
+
+          <nav className={styles.footerNav} aria-label="Navegação do rodapé">
+            {routes
+              .filter((route) => route.showInFooter !== false)
+              .map((route) => (
+                <Link key={route.path} className={styles.footerLink} to={route.path}>
+                  {route.label}
+                </Link>
+              ))}
+            {EXTERNAL_LINKS.map((link) =>
+              link.href ? (
+                <a
+                  key={link.label}
+                  className={styles.footerLink}
+                  href={link.href}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link key={link.label} className={styles.footerLink} to={link.to}>
+                  {link.label}
+                </Link>
+              )
+            )}
+          </nav>
+        </div>
+
+        <p className={styles.footerCopy}>
+          © {new Date().getFullYear()} OpenData Brasil. Dados fornecidos por órgãos públicos
+          brasileiros.
         </p>
       </footer>
     </div>

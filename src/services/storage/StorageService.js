@@ -141,7 +141,7 @@ export class StorageService {
   /**
    * Restores the last query performed by the user, or null when none
    * was saved yet.
-   * @returns {Promise<{ municipios: number[], indicadores: string[], dataInicio: string|null, dataFim: string|null }|null>}
+   * @returns {Promise<{ municipios: number[], indicadores: string[], periodo: string|null, dataInicio: string|null, dataFim: string|null }|null>}
    */
   async recuperarUltimaConsulta() {
     try {

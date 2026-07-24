@@ -66,11 +66,21 @@ describe('ConsultaController', () => {
     const ibgeService = makeIbgeServiceMock()
     const controller = new ConsultaController({ ibgeService })
 
-    await controller.executar([1], ['populacao'])
+    await controller.executar([1], ['populacao'], '2020')
 
     const ultima = await controller.storageService.recuperarUltimaConsulta()
     expect(ultima.municipios).toEqual([1])
     expect(ultima.indicadores).toEqual(['populacao'])
+    expect(ultima.periodo).toBe('2020')
+  })
+
+  it('uses a period override when provided', async () => {
+    const ibgeService = makeIbgeServiceMock()
+    const controller = new ConsultaController({ ibgeService })
+
+    await controller.executar([1], ['populacao'], '2020')
+
+    expect(ibgeService.buscarAgregado).toHaveBeenCalledWith('6579', [1], '2020', '9324', [])
   })
 
   it('uses the cache on a second identical query (does not refetch indicators)', async () => {

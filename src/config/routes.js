@@ -28,8 +28,10 @@ export const routes = [
     component: () => import('../pages/ComparisonPage'),
   },
   {
-    path: '/api-info',
-    label: 'API Info',
+    path: '/apis',
+    label: 'APIs',
     component: () => import('../pages/ApiInfoPage'),
   },
 ]
+
+export default routes

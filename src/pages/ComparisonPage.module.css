@@ -1,13 +1,153 @@
-.placeholder {
-  padding: var(--space-6) 0;
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
 .title {
   font-size: var(--font-size-xl);
-  margin-bottom: var(--space-2);
 }
 
 .subtitle {
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.columnTitle {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.selectedName {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+}
+
+.compareButton {
+  align-self: flex-start;
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-weight: 600;
+  transition: background var(--transition-fast);
+}
+
+.compareButton:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.compareButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error {
+  color: var(--color-error);
+  background: var(--color-error-light);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+}
+
+.comparisonGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+}
+
+.comparisonColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.comparisonColumnTitle {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+}
+
+.sectionTitle {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+}
+
+.diffTableSection {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+.diffTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.diffTable th,
+.diffTable td {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.diffTable th {
+  font-weight: 700;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+}
+
+.positive {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.negative {
+  color: var(--color-error);
+  font-weight: 600;
+}
+
+.extras {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .columns,
+  .comparisonGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .extras {
+    grid-template-columns: 1fr;
+  }
 }

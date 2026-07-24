@@ -6,13 +6,15 @@
  */
 export class Consulta {
   /**
-   * @param {{ municipios: number[], indicadores: string[], dataInicio?: string|null, dataFim?: string|null }} params
+   * @param {{ municipios: number[], indicadores: string[], periodo?: string|null, dataInicio?: string|null, dataFim?: string|null }} params
    */
-  constructor({ municipios, indicadores, dataInicio = null, dataFim = null }) {
+  constructor({ municipios, indicadores, periodo = null, dataInicio = null, dataFim = null }) {
     /** @type {number[]} */
     this.municipios = municipios ?? []
     /** @type {string[]} */
     this.indicadores = indicadores ?? []
+    /** @type {string|null} */
+    this.periodo = periodo ?? null
     /** @type {string|null} */
     this.dataInicio = dataInicio
     /** @type {string|null} */
@@ -44,12 +46,13 @@ export class Consulta {
 
   /**
    * Plain-object representation for storage.
-   * @returns {{ municipios: number[], indicadores: string[], dataInicio: string|null, dataFim: string|null }}
+   * @returns {{ municipios: number[], indicadores: string[], periodo: string|null, dataInicio: string|null, dataFim: string|null }}
    */
   toJSON() {
     return {
       municipios: this.municipios,
       indicadores: this.indicadores,
+      periodo: this.periodo,
       dataInicio: this.dataInicio,
       dataFim: this.dataFim,
     }
@@ -57,13 +60,14 @@ export class Consulta {
 
   /**
    * Recreates a Consulta instance from its serialized form.
-   * @param {{ municipios?: number[], indicadores?: string[], dataInicio?: string|null, dataFim?: string|null }} json
+   * @param {{ municipios?: number[], indicadores?: string[], periodo?: string|null, dataInicio?: string|null, dataFim?: string|null }} json
    * @returns {Consulta}
    */
   static fromJSON(json) {
     return new Consulta({
       municipios: json?.municipios ?? [],
       indicadores: json?.indicadores ?? [],
+      periodo: json?.periodo ?? null,
       dataInicio: json?.dataInicio ?? null,
       dataFim: json?.dataFim ?? null,
     })

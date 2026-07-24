@@ -10,7 +10,7 @@ const WORKER_THRESHOLD = 100
  * municipality/period combination.
  *
  * @param {any} respostaAgregado raw JSON array from the agregados API
- * @param {{ nome: string, unidade: string }} indicadorConfig
+ * @param {{ id: string, nome: string, unidade: string }} indicadorConfig
  * @returns {Indicador[]}
  */
 function normalizarRespostaAgregado(respostaAgregado, indicadorConfig) {
@@ -66,6 +66,61 @@ function normalizarPeriodo(periodo) {
 }
 
 /**
+ * Computes derived indicators such as density and GDP per capita.
+ * @param {Indicador[]} indicadores
+ * @param {import('../../models/Municipio').Municipio[]} municipios
+ * @returns {Indicador[]}
+ */
+function calcularIndicadoresDerivados(indicadores, _municipios) {
+  const porMunicipio = new Map()
+
+  for (const indicador of indicadores) {
+    if (!porMunicipio.has(indicador.municipioId)) {
+      porMunicipio.set(indicador.municipioId, [])
+    }
+    porMunicipio.get(indicador.municipioId).push(indicador)
+  }
+
+  const derivados = []
+
+  for (const [municipioId, lista] of porMunicipio) {
+    const pop = lista.find((i) => i.nome.toLowerCase().includes('população'))
+    const area = lista.find((i) => i.nome.toLowerCase().includes('área'))
+    const pib = lista.find((i) => i.nome.includes('Produto Interno Bruto a preços correntes'))
+
+    if (pop?.valor != null && area?.valor != null && area.valor !== 0) {
+      derivados.push(
+        new Indicador({
+          id: `densidade-${municipioId}-${pop.periodo}`,
+          nome: 'Densidade demográfica',
+          unidade: 'hab/km²',
+          fonte: 'ibge',
+          periodo: pop.periodo,
+          valor: Number((pop.valor / area.valor).toFixed(2)),
+          municipioId,
+        })
+      )
+    }
+
+    if (pib?.valor != null && pop?.valor != null && pop.valor !== 0) {
+      derivados.push(
+        new Indicador({
+          id: `pib-per-capita-${municipioId}-${pib.periodo}`,
+          nome: 'PIB per capita',
+          unidade: 'reais',
+          fonte: 'ibge',
+          periodo: pib.periodo,
+          valor: Math.round((pib.valor * 1000) / pop.valor),
+          municipioId,
+        })
+      )
+    }
+  }
+
+  return derivados
+}
+
+/**
  * Normalizes raw IBGE API responses into the application's canonical
  * `Dataset` shape: consistent field names, numeric coercion, ISO dates,
  * and null-safety for missing values.
@@ -108,9 +163,11 @@ export class DatasetService {
       normalizarRespostaAgregado(resposta.data, resposta.indicador)
     )
 
+    const derivados = calcularIndicadoresDerivados(indicadores, municipios)
+
     return new Dataset({
       municipios,
-      indicadores,
+      indicadores: [...indicadores, ...derivados],
       consultadoEm: new Date(),
       fonte: 'ibge',
     })
@@ -160,5 +217,5 @@ export class DatasetService {
   }
 }
 
-export { normalizarRespostaAgregado, normalizarPeriodo, WORKER_THRESHOLD }
+export { normalizarRespostaAgregado, normalizarPeriodo, calcularIndicadoresDerivados, WORKER_THRESHOLD }
 export default DatasetService

@@ -1,13 +1,48 @@
-.placeholder {
-  padding: var(--space-6) 0;
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
 }
 
 .title {
   font-size: var(--font-size-xl);
-  margin-bottom: var(--space-2);
 }
 
 .subtitle {
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
+  margin-bottom: var(--space-2);
+}
+
+.error {
+  color: var(--color-error);
+  background: var(--color-error-light);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.chartsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+
+.mapSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
 }

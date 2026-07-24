@@ -8,10 +8,11 @@ import { INDICADORES_IBGE } from '../config/indicators'
  * Builds the cache key for a given municipio + indicator combination.
  * @param {number} municipioId
  * @param {string} indicadorId
+ * @param {string} [periodo]
  * @returns {string}
  */
-function chaveCache(municipioId, indicadorId) {
-  return `indicador:${indicadorId}:municipio:${municipioId}`
+function chaveCache(municipioId, indicadorId, periodo = '') {
+  return `indicador:${indicadorId}:municipio:${municipioId}:periodo:${periodo}`
 }
 
 /**
@@ -42,10 +43,11 @@ export class ConsultaController {
    * are skipped so the caller still gets partial results.
    * @param {number[]} municipioIds
    * @param {string[]} indicadorIds
+   * @param {string|null} [periodo] optional year to override indicator default periods
    * @returns {Promise<Dataset>}
    */
-  async executar(municipioIds, indicadorIds) {
-    const consulta = new Consulta({ municipios: municipioIds, indicadores: indicadorIds })
+  async executar(municipioIds, indicadorIds, periodo = null) {
+    const consulta = new Consulta({ municipios: municipioIds, indicadores: indicadorIds, periodo })
     const erros = consulta.validar()
     if (erros.length > 0) {
       throw new Error(erros.join(' '))
@@ -53,11 +55,14 @@ export class ConsultaController {
 
     const indicadoresConfig = INDICADORES_IBGE.filter((indicador) =>
       indicadorIds.includes(indicador.id)
-    )
+    ).map((indicador) => ({
+      ...indicador,
+      periodos: periodo && indicador.suportaPeriodo ? periodo : indicador.periodos,
+    }))
 
     const municipios = await this._buscarMunicipios(municipioIds)
 
-    const respostas = await this._buscarIndicadoresComCache(municipioIds, indicadoresConfig)
+    const respostas = await this._buscarIndicadoresComCache(municipioIds, indicadoresConfig, periodo)
 
     const dataset = await this.datasetService.normalizar(respostas, municipios)
 
@@ -89,10 +94,15 @@ export class ConsultaController {
    * failing indicator doesn't abort the whole query.
    * @param {number[]} municipioIds
    * @param {Array<{ id: string, nome: string, unidade: string, agregadoId: string, variavel: string, periodos: string }>} indicadoresConfig
+   * @param {string|null} [periodo]
    * @returns {Promise<Array<{ indicador: any, data: any }>>}
    */
-  async _buscarIndicadoresComCache(municipioIds, indicadoresConfig) {
-    const chave = chaveCache(municipioIds.join('-'), indicadoresConfig.map((i) => i.id).join('-'))
+  async _buscarIndicadoresComCache(municipioIds, indicadoresConfig, periodo = null) {
+    const chave = chaveCache(
+      municipioIds.join('-'),
+      indicadoresConfig.map((i) => i.id).join('-'),
+      periodo ?? 'default'
+    )
     const ttl = indicadoresConfig.some((i) => i.id === 'populacao' || i.id === 'area')
       ? 1440
       : 360
@@ -108,7 +118,8 @@ export class ConsultaController {
           indicadorConfig.agregadoId,
           municipioIds,
           indicadorConfig.periodos,
-          indicadorConfig.variavel
+          indicadorConfig.variavel,
+          indicadorConfig.classificacoes ?? []
         )
         return { indicador: indicadorConfig, data: resposta.data }
       })

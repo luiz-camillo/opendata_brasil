@@ -8,7 +8,7 @@
  *  - out: { type: 'NORMALIZE_RESULT', payload: { municipios, indicadores, consultadoEm, fonte } }
  *  - out: { type: 'ERROR', payload: string }
  */
-import { normalizarRespostaAgregado } from '../services/dataset/DatasetService'
+import { normalizarRespostaAgregado, calcularIndicadoresDerivados } from '../services/dataset/DatasetService'
 
 self.onmessage = (event) => {
   const { type, payload } = event.data ?? {}
@@ -24,11 +24,13 @@ self.onmessage = (event) => {
       normalizarRespostaAgregado(resposta.data, resposta.indicador)
     )
 
+    const derivados = calcularIndicadoresDerivados(indicadores, municipios)
+
     self.postMessage({
       type: 'NORMALIZE_RESULT',
       payload: {
         municipios,
-        indicadores,
+        indicadores: [...indicadores, ...derivados],
         consultadoEm: new Date().toISOString(),
         fonte: 'ibge',
       },

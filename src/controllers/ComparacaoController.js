@@ -1,5 +1,6 @@
 import { ConsultaController } from './ConsultaController'
 import { Comparador } from '../models/Comparador'
+import { INDICADORES_COMPARACAO_PADRAO } from '../config/indicators'
 
 /**
  * Orchestrates the comparison flow between two municipalities: fetches
@@ -16,15 +17,24 @@ export class ComparacaoController {
   }
 
   /**
+   * Compares two municipalities. Always fetches the default comparison
+   * indicators automatically and merges them with any user-selected
+   * extras.
    * @param {number} municipioIdA
    * @param {number} municipioIdB
-   * @param {string[]} indicadorIds
+   * @param {string[]} [indicadorIdsExtras] additional user-selected indicators
+   * @param {string|null} [periodo] optional year override
    * @returns {Promise<Array<{ indicador: string, valorA: number|null, valorB: number|null, diferenca: number|null, diferencaPercentual: number|null }>>}
    */
-  async comparar(municipioIdA, municipioIdB, indicadorIds) {
+  async comparar(municipioIdA, municipioIdB, indicadorIdsExtras = [], periodo = null) {
+    const indicadorIds = Array.from(
+      new Set([...INDICADORES_COMPARACAO_PADRAO, ...(indicadorIdsExtras ?? [])])
+    )
+
     const dataset = await this.consultaController.executar(
       [municipioIdA, municipioIdB],
-      indicadorIds
+      indicadorIds,
+      periodo
     )
 
     const comparador = new Comparador(dataset)
