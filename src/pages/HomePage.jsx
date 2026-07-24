@@ -58,6 +58,7 @@ function HomePage() {
           <span className={styles.heroIcon} aria-hidden="true">
             🇧🇷
           </span>
+          <h2 className={styles.heroBrand}>OpenData BRASIL</h2>
           <h1 className={styles.title}>Dados públicos do Brasil, ao seu alcance</h1>
           <p className={styles.subtitle}>
             Explore, compare e exporte informações oficiais sobre municípios,

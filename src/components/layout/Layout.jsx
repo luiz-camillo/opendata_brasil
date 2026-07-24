@@ -28,7 +28,7 @@ function Layout({ children }) {
           <span className={styles.brandIcon} aria-hidden="true">
             🇧🇷
           </span>
-          OpenData Brasil
+          <span className={styles.brandName}>OpenData BRASIL</span>
         </Link>
 
         <nav className={styles.headerNav} aria-label="Navegação superior">
@@ -79,7 +79,7 @@ function Layout({ children }) {
             <span className={styles.brandIcon} aria-hidden="true">
               🇧🇷
             </span>
-            OpenData Brasil
+            <span className={styles.brandName}>OpenData BRASIL</span>
             <p className={styles.footerTagline}>Dados públicos abertos e acessíveis.</p>
           </div>
 
@@ -111,8 +111,11 @@ function Layout({ children }) {
           </nav>
         </div>
 
+        <p className={styles.footerMadeWith}>
+          Feito com inteligência artificial e revisão humana
+        </p>
         <p className={styles.footerCopy}>
-          © {new Date().getFullYear()} OpenData Brasil. Dados fornecidos por órgãos públicos
+          © {new Date().getFullYear()} OpenData BRASIL. Dados fornecidos por órgãos públicos
           brasileiros.
         </p>
       </footer>

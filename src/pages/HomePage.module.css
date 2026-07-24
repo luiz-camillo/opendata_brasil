@@ -33,11 +33,28 @@
   justify-content: center;
   width: 72px;
   height: 72px;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
   font-size: 36px;
   background: var(--color-surface);
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-sm);
+}
+
+.heroBrand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-size-xs);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-3);
 }
 
 .title {
