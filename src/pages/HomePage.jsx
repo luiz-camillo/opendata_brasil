@@ -37,28 +37,44 @@ const features = [
   },
 ]
 
+const officialSources = [
+  { name: 'IBGE', acronym: 'IBGE', description: 'Instituto Brasileiro de Geografia e Estatística', url: 'https://www.ibge.gov.br' },
+  { name: 'IPEA', acronym: 'IPEA', description: 'Instituto de Pesquisa Econômica Aplicada', url: 'https://www.ipea.gov.br' },
+  { name: 'DATASUS', acronym: 'DATASUS', description: 'Departamento de Informática do SUS', url: 'https://datasus.saude.gov.br' },
+  { name: 'INEP', acronym: 'INEP', description: 'Instituto Nacional de Estudos e Pesquisas Educacionais', url: 'https://www.gov.br/inep' },
+  { name: 'Tesouro Nacional', acronym: 'STN', description: 'Secretaria do Tesouro Nacional', url: 'https://www.tesourotransparente.gov.br' },
+  { name: 'Portal da Transparência', acronym: 'CGU', description: 'Controladoria-Geral da União', url: 'https://www.portaltransparencia.gov.br' },
+]
+
 /**
- * HomePage is the landing page: hero, "how it works" steps, quick stats
- * and quick-access cards to the main features.
+ * HomePage is the institutional landing page for OpenData Brasil.
+ * Hero, quick stats, how it works, feature cards, and official data sources.
  */
 function HomePage() {
   return (
-    <div>
+    <div className={styles.home}>
       <section className={styles.hero}>
-        <span className={styles.heroIcon} aria-hidden="true">
-          🇧🇷
-        </span>
-        <h1 className={styles.title}>OpenData Brasil</h1>
-        <p className={styles.subtitle}>
-          Uma plataforma para explorar, visualizar e comparar dados públicos
-          brasileiros de forma simples, rápida e acessível.
-        </p>
-        <Link to="/dashboard" className={styles.cta}>
-          Ir para o Dashboard
-        </Link>
+        <div className={styles.heroContent}>
+          <span className={styles.heroIcon} aria-hidden="true">
+            🇧🇷
+          </span>
+          <h1 className={styles.title}>Dados públicos do Brasil, ao seu alcance</h1>
+          <p className={styles.subtitle}>
+            Explore, compare e exporte informações oficiais sobre municípios,
+            indicadores sociais, econômicos e territoriais em uma única plataforma.
+          </p>
+          <div className={styles.heroActions}>
+            <Link to="/dashboard" className={styles.ctaPrimary}>
+              Acessar o Dashboard
+            </Link>
+            <Link to="/explorer" className={styles.ctaSecondary}>
+              Explorar dados
+            </Link>
+          </div>
+        </div>
       </section>
 
-      <section className={styles.stats}>
+      <section className={styles.stats} aria-label="Estatísticas da plataforma">
         <div className={styles.statCard}>
           <span className={styles.statValue}>5.570+</span>
           <span className={styles.statLabel}>Municípios disponíveis</span>
@@ -73,7 +89,7 @@ function HomePage() {
         </div>
       </section>
 
-      <section>
+      <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Como funciona</h2>
         <div className={styles.stepsGrid}>
           {steps.map((step, index) => (
@@ -89,7 +105,7 @@ function HomePage() {
         </div>
       </section>
 
-      <section>
+      <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Explore a plataforma</h2>
         <div className={styles.grid}>
           {features.map((feature) => (
@@ -100,6 +116,29 @@ function HomePage() {
               <h3 className={styles.cardTitle}>{feature.title}</h3>
               <p className={styles.cardText}>{feature.text}</p>
             </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Fontes oficiais</h2>
+        <p className={styles.sectionLead}>
+          Dados integrados a partir de APIs públicas federais, garantindo transparência e confiabilidade.
+        </p>
+        <div className={styles.sourcesGrid}>
+          {officialSources.map((source) => (
+            <a
+              key={source.name}
+              href={source.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.sourceCard}
+              aria-label={`${source.name} - ${source.description} (abre em nova aba)`}
+            >
+              <span className={styles.sourceAcronym}>{source.acronym}</span>
+              <span className={styles.sourceName}>{source.name}</span>
+              <span className={styles.sourceDescription}>{source.description}</span>
+            </a>
           ))}
         </div>
       </section>
