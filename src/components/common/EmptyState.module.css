@@ -10,9 +10,15 @@
 }
 
 .icon {
-  font-size: 48px;
-  line-height: 1;
-  margin-bottom: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  margin-bottom: var(--space-3);
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  border-radius: var(--radius-lg);
 }
 
 .title {
@@ -38,4 +44,9 @@
 
 .action:hover {
   background: var(--color-primary-hover);
+}
+
+.action:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
 }

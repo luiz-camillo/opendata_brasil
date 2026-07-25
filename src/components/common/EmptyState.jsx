@@ -1,3 +1,4 @@
+import { BarChart3 } from 'lucide-react'
 import styles from './EmptyState.module.css'
 
 /**
@@ -12,11 +13,11 @@ import styles from './EmptyState.module.css'
  *   onAction?: () => void,
  * }} props
  */
-function EmptyState({ icon = '📭', title, description, actionLabel, onAction }) {
+function EmptyState({ icon, title, description, actionLabel, onAction }) {
   return (
     <div className={styles.container}>
       <div className={styles.icon} aria-hidden="true">
-        {icon}
+        {icon ?? <BarChart3 size={48} strokeWidth={1.5} />}
       </div>
       <h3 className={styles.title}>{title}</h3>
       {description && <p className={styles.description}>{description}</p>}

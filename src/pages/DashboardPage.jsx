@@ -157,7 +157,6 @@ function DashboardPage() {
 
       {!hasData && !loading && (
         <EmptyState
-          icon="📊"
           title="Nenhum dado selecionado"
           description="Escolha ao menos um município e um indicador, depois clique em Consultar."
         />
@@ -214,7 +213,6 @@ function DashboardPage() {
 function SectionError(_error, reset) {
   return (
     <EmptyState
-      icon="⚠️"
       title="Seção indisponível"
       description="Não foi possível carregar esta seção."
       actionLabel="Tentar novamente"
