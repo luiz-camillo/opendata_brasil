@@ -1,49 +1,65 @@
 import { Link } from 'react-router-dom'
+import {
+  Search,
+  CheckSquare,
+  BarChart3,
+  Download,
+  LayoutDashboard,
+  Table2,
+  Scale,
+  Puzzle,
+  Database,
+  Landmark,
+  HeartPulse,
+  GraduationCap,
+  Wallet,
+  ShieldCheck,
+} from 'lucide-react'
 import { API_SOURCES } from '../config/apiSources'
 import { INDICADORES_IBGE } from '../config/indicators'
 import styles from './HomePage.module.css'
 
 const steps = [
-  { icon: '🔍', title: 'Buscar', text: 'Encontre municípios brasileiros pelo nome.' },
-  { icon: '✅', title: 'Selecionar', text: 'Escolha os indicadores públicos de interesse.' },
-  { icon: '📊', title: 'Visualizar', text: 'Explore gráficos, tabelas e mapas interativos.' },
-  { icon: '⬇️', title: 'Exportar', text: 'Baixe os dados em CSV ou JSON quando quiser.' },
+  { Icon: Search, title: 'Buscar', text: 'Encontre municípios brasileiros pelo nome.' },
+  { Icon: CheckSquare, title: 'Selecionar', text: 'Escolha os indicadores públicos de interesse.' },
+  { Icon: BarChart3, title: 'Visualizar', text: 'Explore gráficos, tabelas e mapas interativos.' },
+  { Icon: Download, title: 'Exportar', text: 'Baixe os dados em CSV ou JSON quando quiser.' },
 ]
 
 const features = [
   {
     to: '/dashboard',
-    icon: '📊',
+    Icon: LayoutDashboard,
     title: 'Dashboard',
     text: 'Visualize indicadores públicos em gráficos e painéis interativos.',
   },
   {
     to: '/explorer',
-    icon: '🔍',
+    Icon: Table2,
     title: 'Data Explorer',
     text: 'Explore conjuntos de dados abertos com filtros e tabelas dinâmicas.',
   },
   {
     to: '/comparacao',
-    icon: '⚖️',
+    Icon: Scale,
     title: 'Comparação',
     text: 'Compare dados entre estados, municípios e períodos.',
   },
   {
     to: '/api-info',
-    icon: '🧩',
+    Icon: Puzzle,
     title: 'API Info',
     text: 'Consulte a documentação e os endpoints disponíveis.',
   },
 ]
 
 const officialSources = [
-  { name: 'IBGE', acronym: 'IBGE', description: 'Instituto Brasileiro de Geografia e Estatística', url: 'https://www.ibge.gov.br' },
-  { name: 'IPEA', acronym: 'IPEA', description: 'Instituto de Pesquisa Econômica Aplicada', url: 'https://www.ipea.gov.br' },
-  { name: 'DATASUS', acronym: 'DATASUS', description: 'Departamento de Informática do SUS', url: 'https://datasus.saude.gov.br' },
-  { name: 'INEP', acronym: 'INEP', description: 'Instituto Nacional de Estudos e Pesquisas Educacionais', url: 'https://www.gov.br/inep' },
-  { name: 'Tesouro Nacional', acronym: 'STN', description: 'Secretaria do Tesouro Nacional', url: 'https://www.tesourotransparente.gov.br' },
-  { name: 'Portal da Transparência', acronym: 'CGU', description: 'Controladoria-Geral da União', url: 'https://www.portaltransparencia.gov.br' },
+  { name: 'IBGE', acronym: 'IBGE', description: 'Instituto Brasileiro de Geografia e Estatística', url: 'https://www.ibge.gov.br', Icon: Database },
+  { name: 'IPEA', acronym: 'IPEA', description: 'Instituto de Pesquisa Econômica Aplicada', url: 'https://www.ipea.gov.br', Icon: BarChart3 },
+  { name: 'DATASUS', acronym: 'DATASUS', description: 'Departamento de Informática do SUS', url: 'https://datasus.saude.gov.br', Icon: HeartPulse },
+  { name: 'INEP', acronym: 'INEP', description: 'Instituto Nacional de Estudos e Pesquisas Educacionais', url: 'https://www.gov.br/inep', Icon: GraduationCap },
+  { name: 'Tesouro Nacional', acronym: 'STN', description: 'Secretaria do Tesouro Nacional', url: 'https://www.tesourotransparente.gov.br', Icon: Wallet },
+  { name: 'Portal da Transparência', acronym: 'CGU', description: 'Controladoria-Geral da União', url: 'https://www.portaltransparencia.gov.br', Icon: ShieldCheck },
 ]
 
 /**
@@ -54,11 +70,9 @@ function HomePage() {
   return (
     <div className={styles.home}>
       <section className={styles.hero}>
+        <div className={styles.heroGrid} aria-hidden="true" />
         <div className={styles.heroContent}>
-          <span className={styles.heroIcon} aria-hidden="true">
-            🇧🇷
-          </span>
-          <h2 className={styles.heroBrand}>OpenData BRASIL</h2>
+          <span className={styles.heroBrand}>OpenData BRASIL</span>
           <h1 className={styles.title}>Dados públicos do Brasil, ao seu alcance</h1>
           <p className={styles.subtitle}>
             Explore, compare e exporte informações oficiais sobre municípios,
@@ -97,7 +111,7 @@ function HomePage() {
             <div key={step.title} className={styles.stepCard}>
               <span className={styles.stepNumber}>{index + 1}</span>
               <div className={styles.stepIcon} aria-hidden="true">
-                {step.icon}
+                <step.Icon size={28} strokeWidth={1.5} />
               </div>
               <h3 className={styles.stepTitle}>{step.title}</h3>
               <p className={styles.stepText}>{step.text}</p>
@@ -112,7 +126,7 @@ function HomePage() {
           {features.map((feature) => (
             <Link key={feature.to} to={feature.to} className={styles.card}>
               <div className={styles.cardIcon} aria-hidden="true">
-                {feature.icon}
+                <feature.Icon size={28} strokeWidth={1.5} />
               </div>
               <h3 className={styles.cardTitle}>{feature.title}</h3>
               <p className={styles.cardText}>{feature.text}</p>
@@ -136,7 +150,12 @@ function HomePage() {
               className={styles.sourceCard}
               aria-label={`${source.name} - ${source.description} (abre em nova aba)`}
             >
-              <span className={styles.sourceAcronym}>{source.acronym}</span>
+              <div className={styles.sourceHeader}>
+                <span className={styles.sourceIcon} aria-hidden="true">
+                  <source.Icon size={18} strokeWidth={1.5} />
+                </span>
+                <span className={styles.sourceAcronym}>{source.acronym}</span>
+              </div>
               <span className={styles.sourceName}>{source.name}</span>
               <span className={styles.sourceDescription}>{source.description}</span>
             </a>

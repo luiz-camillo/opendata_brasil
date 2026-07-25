@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { Menu, Database } from 'lucide-react'
 import { routes } from '../../config/routes'
 import Sidebar from './Sidebar'
 import styles from './Layout.module.css'
@@ -25,8 +26,8 @@ function Layout({ children }) {
     <div className={styles.shell}>
       <header className={styles.header}>
         <Link to="/" className={styles.brand}>
-          <span className={styles.brandIcon} aria-hidden="true">
-            🇧🇷
+          <span className={styles.brandMark} aria-hidden="true">
+            <Database size={20} strokeWidth={2} />
           </span>
           <span className={styles.brandName}>OpenData BRASIL</span>
         </Link>
@@ -53,7 +54,7 @@ function Layout({ children }) {
           aria-label="Abrir menu"
           onClick={() => setSidebarOpen((open) => !open)}
         >
-          ☰
+          <Menu size={24} strokeWidth={2} />
         </button>
       </header>
 
@@ -76,8 +77,8 @@ function Layout({ children }) {
       <footer className={styles.footer}>
         <div className={styles.footerContent}>
           <div className={styles.footerBrand}>
-            <span className={styles.brandIcon} aria-hidden="true">
-              🇧🇷
+            <span className={styles.brandMark} aria-hidden="true">
+              <Database size={18} strokeWidth={2} />
             </span>
             <span className={styles.brandName}>OpenData BRASIL</span>
             <p className={styles.footerTagline}>Dados públicos abertos e acessíveis.</p>
