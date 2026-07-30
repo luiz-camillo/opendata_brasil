@@ -108,7 +108,7 @@ export class ConsultaController {
       : 360
 
     const cacheado = await this.storageService.getCachedData(chave)
-    if (cacheado) {
+    if (Array.isArray(cacheado) && cacheado.length > 0) {
       return cacheado
     }
 
@@ -129,11 +129,15 @@ export class ConsultaController {
       .filter((resultado) => resultado.status === 'fulfilled')
       .map((resultado) => resultado.value)
 
-    if (respostas.length > 0) {
-      await this.storageService.setCachedData(chave, respostas, ttl)
+    const respostasComDados = respostas.filter(
+      (resposta) => Array.isArray(resposta.data) && resposta.data.length > 0
+    )
+
+    if (respostasComDados.length > 0) {
+      await this.storageService.setCachedData(chave, respostasComDados, ttl)
     }
 
-    return respostas
+    return respostasComDados
   }
 
   /**

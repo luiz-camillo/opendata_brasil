@@ -21,24 +21,21 @@ const COLUMNS = [
 ]
 
 /**
- * DataExplorerPage: FilterBar + a fully-featured, virtualized DataTable
- * fed from `useConsulta`.
+ * DataExplorerPage: select municipalities and view all main IBGE
+ * indicators in a virtualized table.
  */
 function DataExplorerPage() {
   const {
     municipios,
-    indicadores,
     selecionados,
-    periodo,
     dataset,
     loading,
     error,
     buscarMunicipios,
     adicionarMunicipio,
     removerMunicipio,
-    selecionarIndicadores,
-    selecionarPeriodo,
     buscarDados,
+    INDICADORES_DASHBOARD_PADRAO,
   } = useConsulta()
 
   const [selectedMunicipioObjs, setSelectedMunicipioObjs] = useState([])
@@ -66,6 +63,10 @@ function DataExplorerPage() {
     },
     [removerMunicipio]
   )
+
+  const handleSubmit = useCallback(() => {
+    buscarDados(INDICADORES_DASHBOARD_PADRAO)
+  }, [buscarDados, INDICADORES_DASHBOARD_PADRAO])
 
   const tableRows = useMemo(() => {
     if (!dataset) return []
@@ -96,7 +97,7 @@ function DataExplorerPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Data Explorer</h1>
       <p className={styles.subtitle}>
-        Explore os dados retornados em uma tabela virtualizada, com busca, ordenação e exportação.
+        Selecione municípios para explorar os principais indicadores do IBGE.
       </p>
 
       <FilterBar
@@ -106,11 +107,8 @@ function DataExplorerPage() {
         onAddMunicipio={handleAddMunicipio}
         onRemoveMunicipio={handleRemoveMunicipio}
         municipioMax={5}
-        selectedIndicadores={indicadores}
-        onChangeIndicadores={selecionarIndicadores}
-        periodo={periodo}
-        onChangePeriodo={selecionarPeriodo}
-        onSubmit={() => buscarDados()}
+        hideIndicadores
+        onSubmit={handleSubmit}
         submitting={loading}
       />
 
@@ -120,7 +118,7 @@ function DataExplorerPage() {
         <EmptyState
           icon="🔍"
           title="Nenhum dado carregado"
-          description="Selecione municípios e indicadores, depois clique em Consultar."
+          description="Selecione um ou mais municípios e clique em Consultar."
         />
       )}
 
