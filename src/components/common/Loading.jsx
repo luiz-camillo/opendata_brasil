@@ -1,3 +1,4 @@
+import { Loader2 } from 'lucide-react'
 import styles from './Loading.module.css'
 
 /**
@@ -7,7 +8,7 @@ import styles from './Loading.module.css'
 function Loading({ message = 'Carregando...' }) {
   return (
     <div className={styles.wrapper}>
-      <div className={styles.spinner} role="status" aria-label="loading" />
+      <Loader2 className={styles.spinner} size={40} strokeWidth={2} aria-hidden="true" />
       {message && <p className={styles.message}>{message}</p>}
     </div>
   )

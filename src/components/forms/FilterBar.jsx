@@ -16,6 +16,8 @@ import styles from './FilterBar.module.css'
  *   onRemoveMunicipio: (id: number) => void,
  *   onClearMunicipios?: () => void,
  *   municipioMax?: number,
+ *   singleMunicipio?: boolean,
+ *   hideIndicadores?: boolean,
  *   selectedIndicadores: string[],
  *   onChangeIndicadores: (ids: string[]) => void,
  *   periodo?: string|null,
@@ -34,6 +36,8 @@ function FilterBar({
   onRemoveMunicipio,
   onClearMunicipios,
   municipioMax = 2,
+  singleMunicipio = false,
+  hideIndicadores = false,
   selectedIndicadores,
   onChangeIndicadores,
   periodo,
@@ -42,7 +46,9 @@ function FilterBar({
   submitting = false,
   submitLabel = 'Consultar',
 }) {
-  const disabled = selectedMunicipios.length === 0 || selectedIndicadores.length === 0
+  const disabled = hideIndicadores
+    ? selectedMunicipios.length === 0
+    : selectedMunicipios.length === 0 || selectedIndicadores.length === 0
 
   return (
     <div className={styles.bar}>
@@ -55,15 +61,20 @@ function FilterBar({
         onRemove={onRemoveMunicipio}
         onClear={onClearMunicipios}
         max={municipioMax}
+        single={singleMunicipio}
       />
 
-      <IndicadorSelector selected={selectedIndicadores} onChange={onChangeIndicadores} />
+      {!hideIndicadores && (
+        <IndicadorSelector selected={selectedIndicadores} onChange={onChangeIndicadores} />
+      )}
 
-      <PeriodoSelector
-        value={periodo}
-        onChange={onChangePeriodo}
-        selectedIndicadores={selectedIndicadores}
-      />
+      {!hideIndicadores && (
+        <PeriodoSelector
+          value={periodo}
+          onChange={onChangePeriodo}
+          selectedIndicadores={selectedIndicadores}
+        />
+      )}
 
       <button
         type="button"

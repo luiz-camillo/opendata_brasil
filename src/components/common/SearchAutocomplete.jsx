@@ -1,12 +1,14 @@
-import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useId, useRef, useState } from 'react'
+import { Search, X } from 'lucide-react'
 import { useDebounce } from '../../hooks/useDebounce'
 import styles from './SearchAutocomplete.module.css'
 
-const MAX_SUGGESTOES = 10
+const MAX_SUGESTOES = 10
 
 /**
  * Text input with debounced, keyboard-navigable autocomplete suggestions
- * for Brazilian municipalities.
+ * for Brazilian municipalities. The search loading state is kept internal
+ * so typing does not re-render parent layouts (e.g. footer flicker).
  *
  * @param {{
  *   onSelect: (municipio: import('../../models/Municipio').Municipio) => void,
@@ -17,26 +19,37 @@ const MAX_SUGGESTOES = 10
  *   label?: string,
  * }} props
  */
-function SearchAutocomplete({
+function SearchAutocompleteInner({
   onSelect,
   onSearch,
   suggestions = [],
-  loading = false,
+  loading: externalLoading = false,
   placeholder = 'Buscar município...',
   label = 'Município',
 }) {
   const [query, setQuery] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
+  const [internalLoading, setInternalLoading] = useState(false)
   const debouncedQuery = useDebounce(query, 300)
   const containerRef = useRef(null)
+  const inputRef = useRef(null)
   const inputId = useId()
+  const justSelectedRef = useRef(false)
 
-  const visibleSuggestions = suggestions.slice(0, MAX_SUGGESTOES)
+  const loading = externalLoading || internalLoading
+  const visibleSuggestions = suggestions.slice(0, MAX_SUGESTOES)
 
   useEffect(() => {
+    if (justSelectedRef.current) {
+      justSelectedRef.current = false
+      return
+    }
     if (debouncedQuery.trim().length >= 2 && typeof onSearch === 'function') {
-      onSearch(debouncedQuery.trim())
+      setInternalLoading(true)
+      Promise.resolve(onSearch(debouncedQuery.trim())).finally(() => {
+        setInternalLoading(false)
+      })
       setIsOpen(true)
     } else {
       setIsOpen(false)
@@ -57,10 +70,12 @@ function SearchAutocomplete({
 
   const handleSelect = useCallback(
     (municipio) => {
+      justSelectedRef.current = true
       onSelect?.(municipio)
       setQuery('')
       setIsOpen(false)
       setActiveIndex(-1)
+      inputRef.current?.focus()
     },
     [onSelect]
   )
@@ -92,6 +107,7 @@ function SearchAutocomplete({
     setQuery('')
     setIsOpen(false)
     setActiveIndex(-1)
+    inputRef.current?.focus()
   }, [])
 
   return (
@@ -102,7 +118,11 @@ function SearchAutocomplete({
         </label>
       )}
       <div className={styles.inputWrapper}>
+        <span className={styles.inputIcon} aria-hidden="true">
+          <Search size={16} strokeWidth={2} />
+        </span>
         <input
+          ref={inputRef}
           id={inputId}
           type="text"
           className={styles.input}
@@ -127,7 +147,7 @@ function SearchAutocomplete({
             onClick={handleClear}
             aria-label="Limpar busca"
           >
-            ✕
+            <X size={16} strokeWidth={2} />
           </button>
         )}
       </div>
@@ -148,10 +168,8 @@ function SearchAutocomplete({
                   : styles.suggestion
               }
               onMouseEnter={() => setActiveIndex(index)}
-              onMouseDown={(event) => {
-                event.preventDefault()
-                handleSelect(municipio)
-              }}
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => handleSelect(municipio)}
             >
               {municipio.nomeCompleto ?? `${municipio.nome} - ${municipio.estado?.sigla ?? ''}`}
             </li>
@@ -161,5 +179,7 @@ function SearchAutocomplete({
     </div>
   )
 }
+
+const SearchAutocomplete = memo(SearchAutocompleteInner)
 
 export default SearchAutocomplete

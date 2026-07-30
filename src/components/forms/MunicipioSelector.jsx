@@ -1,9 +1,12 @@
+import { memo } from 'react'
 import SearchAutocomplete from '../common/SearchAutocomplete'
+import { X } from 'lucide-react'
 import styles from './MunicipioSelector.module.css'
 
 /**
- * Allows selecting up to `max` municipalities via `SearchAutocomplete`,
- * displaying the current selection as removable chips.
+ * Allows selecting municipalities via `SearchAutocomplete`, displaying the
+ * current selection as removable chips. When `single` is true only one
+ * municipality is kept (the previous one is replaced).
  *
  * @param {{
  *   suggestions: import('../../models/Municipio').Municipio[],
@@ -14,10 +17,11 @@ import styles from './MunicipioSelector.module.css'
  *   onRemove: (id: number) => void,
  *   onClear?: () => void,
  *   max?: number,
+ *   single?: boolean,
  *   label?: string,
  * }} props
  */
-function MunicipioSelector({
+function MunicipioSelectorInner({
   suggestions,
   loading = false,
   onSearch,
@@ -26,9 +30,15 @@ function MunicipioSelector({
   onRemove,
   onClear,
   max = 2,
+  single = false,
   label = 'Municípios',
 }) {
-  const limitReached = selected.length >= max
+  const limitReached = single ? selected.length >= 1 : selected.length >= max
+
+  const handleAdd = (municipio) => {
+    if (selected.some((m) => m.id === municipio.id)) return
+    onAdd?.(municipio)
+  }
 
   return (
     <div className={styles.container}>
@@ -37,15 +47,17 @@ function MunicipioSelector({
           label={label}
           placeholder={
             limitReached
-              ? `Máximo de ${max} municípios selecionados`
+              ? single
+                ? 'Município já selecionado'
+                : `Máximo de ${max} municípios selecionados`
               : 'Digite o nome do município...'
           }
           suggestions={suggestions}
           loading={loading}
           onSearch={onSearch}
           onSelect={(municipio) => {
-            if (!limitReached && !selected.some((m) => m.id === municipio.id)) {
-              onAdd?.(municipio)
+            if (!limitReached) {
+              handleAdd(municipio)
             }
           }}
         />
@@ -62,7 +74,7 @@ function MunicipioSelector({
                 onClick={() => onRemove?.(municipio.id)}
                 aria-label={`Remover ${municipio.nome}`}
               >
-                ✕
+                <X size={14} strokeWidth={2} />
               </button>
             </span>
           ))}
@@ -76,5 +88,7 @@ function MunicipioSelector({
     </div>
   )
 }
+
+const MunicipioSelector = memo(MunicipioSelectorInner)
 
 export default MunicipioSelector

@@ -34,7 +34,8 @@ function DataExplorerPage() {
     loading,
     error,
     buscarMunicipios,
-    selecionarMunicipio,
+    adicionarMunicipio,
+    removerMunicipio,
     selecionarIndicadores,
     selecionarPeriodo,
     buscarDados,
@@ -50,12 +51,20 @@ function DataExplorerPage() {
 
   const handleAddMunicipio = useCallback(
     (municipio) => {
-      selecionarMunicipio(municipio.id)
+      adicionarMunicipio(municipio)
       setSelectedMunicipioObjs((atual) =>
         atual.some((m) => m.id === municipio.id) ? atual : [...atual, municipio]
       )
     },
-    [selecionarMunicipio]
+    [adicionarMunicipio]
+  )
+
+  const handleRemoveMunicipio = useCallback(
+    (id) => {
+      removerMunicipio(id)
+      setSelectedMunicipioObjs((atual) => atual.filter((m) => m.id !== id))
+    },
+    [removerMunicipio]
   )
 
   const tableRows = useMemo(() => {
@@ -92,17 +101,16 @@ function DataExplorerPage() {
 
       <FilterBar
         municipioSuggestions={municipios}
-        municipioLoading={loading}
         onSearchMunicipio={buscarMunicipios}
         selectedMunicipios={selectedMunicipioObjs}
         onAddMunicipio={handleAddMunicipio}
-        onRemoveMunicipio={selecionarMunicipio}
+        onRemoveMunicipio={handleRemoveMunicipio}
         municipioMax={5}
         selectedIndicadores={indicadores}
         onChangeIndicadores={selecionarIndicadores}
         periodo={periodo}
         onChangePeriodo={selecionarPeriodo}
-        onSubmit={buscarDados}
+        onSubmit={() => buscarDados()}
         submitting={loading}
       />
 

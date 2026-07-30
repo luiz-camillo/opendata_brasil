@@ -3,6 +3,8 @@ import { ConsultaController } from '../controllers/ConsultaController'
 import { StorageService } from '../services/storage/StorageService'
 import { IbgeService } from '../services/api/IbgeService'
 
+const INDICADORES_DASHBOARD_PADRAO = ['populacao', 'area', 'pib', 'pib-per-capita', 'densidade', 'alfabetizacao']
+
 /**
  * Hook that manages municipality search, selection and indicator data
  * fetching for the query/explorer screens. Restores the user's last
@@ -17,9 +19,12 @@ import { IbgeService } from '../services/api/IbgeService'
  *   error: string|null,
  *   buscarMunicipios: (query: string) => Promise<void>,
  *   selecionarMunicipio: (id: number) => void,
+ *   adicionarMunicipio: (municipio: import('../models/Municipio').Municipio) => void,
+ *   definirMunicipioUnico: (municipio: import('../models/Municipio').Municipio) => void,
+ *   removerMunicipio: (id: number) => void,
  *   selecionarIndicadores: (ids: string[]) => void,
  *   selecionarPeriodo: (periodo: string|null) => void,
- *   buscarDados: () => Promise<void>,
+ *   buscarDados: (indicadorIds?: string[]) => Promise<void>,
  *   limpar: () => void
  * }}
  */
@@ -64,7 +69,6 @@ export function useConsulta() {
    * @returns {Promise<void>}
    */
   const buscarMunicipios = useCallback(async (query) => {
-    setLoading(true)
     setError(null)
     try {
       const resposta = await ibgeServiceRef.current.buscarMunicipios(query)
@@ -73,8 +77,6 @@ export function useConsulta() {
       if (erro?.name !== 'AbortError') {
         setError(erro?.message ?? 'Falha ao buscar municípios')
       }
-    } finally {
-      setLoading(false)
     }
   }, [])
 
@@ -90,6 +92,33 @@ export function useConsulta() {
   }, [])
 
   /**
+   * Adds a municipality if it is not already selected.
+   * @param {import('../models/Municipio').Municipio} municipio
+   * @returns {void}
+   */
+  const adicionarMunicipio = useCallback((municipio) => {
+    setSelecionados((atual) => (atual.includes(municipio.id) ? atual : [...atual, municipio.id]))
+  }, [])
+
+  /**
+   * Replaces the current selection with a single municipality.
+   * @param {import('../models/Municipio').Municipio} municipio
+   * @returns {void}
+   */
+  const definirMunicipioUnico = useCallback((municipio) => {
+    setSelecionados([municipio.id])
+  }, [])
+
+  /**
+   * Removes a municipality from the selection.
+   * @param {number} id
+   * @returns {void}
+   */
+  const removerMunicipio = useCallback((id) => {
+    setSelecionados((atual) => atual.filter((existente) => existente !== id))
+  }, [])
+
+  /**
    * @param {string[]} ids
    * @returns {void}
    */
@@ -102,10 +131,12 @@ export function useConsulta() {
   }, [])
 
   /**
+   * @param {string[]} [indicadorIds]
    * @returns {Promise<void>}
    */
-  const buscarDados = useCallback(async () => {
-    if (selecionados.length === 0 || indicadores.length === 0) {
+  const buscarDados = useCallback(async (indicadorIds) => {
+    const idsIndicadores = indicadorIds ?? indicadores
+    if (selecionados.length === 0 || idsIndicadores.length === 0) {
       setError('Selecione ao menos um município e um indicador.')
       return
     }
@@ -113,7 +144,7 @@ export function useConsulta() {
     setLoading(true)
     setError(null)
     try {
-      const resultado = await controllerRef.current.executar(selecionados, indicadores, periodo)
+      const resultado = await controllerRef.current.executar(selecionados, idsIndicadores, periodo)
       setDataset(resultado)
     } catch (erro) {
       setError(erro?.message ?? 'Falha ao buscar dados')
@@ -121,6 +152,19 @@ export function useConsulta() {
       setLoading(false)
     }
   }, [selecionados, indicadores, periodo])
+
+  /**
+   * Fetches the default dashboard indicators for the currently selected
+   * municipality.
+   * @returns {Promise<void>}
+   */
+  const buscarDadosDashboard = useCallback(async () => {
+    if (selecionados.length === 0) {
+      setError('Selecione um município.')
+      return
+    }
+    await buscarDados(INDICADORES_DASHBOARD_PADRAO)
+  }, [selecionados, buscarDados])
 
   /**
    * Resets all state back to its initial values.
@@ -143,11 +187,16 @@ export function useConsulta() {
     dataset,
     loading,
     error,
+    INDICADORES_DASHBOARD_PADRAO,
     buscarMunicipios,
     selecionarMunicipio,
+    adicionarMunicipio,
+    definirMunicipioUnico,
+    removerMunicipio,
     selecionarIndicadores,
     selecionarPeriodo,
     buscarDados,
+    buscarDadosDashboard,
     limpar,
   }
 }

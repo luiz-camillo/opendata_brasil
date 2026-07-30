@@ -1,3 +1,4 @@
+import { AlertTriangle, BarChart3 } from 'lucide-react'
 import styles from './ChartContainer.module.css'
 import Loading from '../common/Loading'
 import EmptyState from '../common/EmptyState'
@@ -21,10 +22,18 @@ function ChartContainer({ loading = false, error = null, empty = false, title, c
       <div className={styles.body}>
         {loading && <Loading message="Carregando gráfico..." />}
         {!loading && error && (
-          <EmptyState icon="⚠️" title="Erro ao carregar gráfico" description={error} />
+          <EmptyState
+            icon={<AlertTriangle size={48} strokeWidth={1.5} />}
+            title="Erro ao carregar gráfico"
+            description={error}
+          />
         )}
         {!loading && !error && empty && (
-          <EmptyState icon="📊" title="Sem dados" description="Nenhum dado disponível para exibir." />
+          <EmptyState
+            icon={<BarChart3 size={48} strokeWidth={1.5} />}
+            title="Sem dados"
+            description="Nenhum dado disponível para exibir."
+          />
         )}
         {!loading && !error && !empty && children}
       </div>

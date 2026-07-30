@@ -1,3 +1,4 @@
+import { BarChart3 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import useConsulta from '../hooks/useConsulta'
 import FilterBar from '../components/forms/FilterBar'
@@ -67,23 +68,21 @@ function buildLineData(dataset) {
 }
 
 /**
- * DashboardPage: filter bar (municipality + indicator selection), a
- * card grid, bar/line charts and a map, all wired to `useConsulta`.
+ * DashboardPage: select a single municipality and view its main IBGE
+ * indicators (population, area, density, GDP per capita, etc.).
  */
 function DashboardPage() {
   const {
     municipios,
-    indicadores,
     selecionados,
-    periodo,
     dataset,
     loading,
     error,
     buscarMunicipios,
-    selecionarMunicipio,
-    selecionarIndicadores,
-    selecionarPeriodo,
-    buscarDados,
+    definirMunicipioUnico,
+    removerMunicipio,
+    buscarDadosDashboard,
+    INDICADORES_DASHBOARD_PADRAO,
   } = useConsulta()
 
   const [selectedMunicipioObjs, setSelectedMunicipioObjs] = useState([])
@@ -96,20 +95,23 @@ function DashboardPage() {
 
   const handleAddMunicipio = useCallback(
     (municipio) => {
-      selecionarMunicipio(municipio.id)
-      setSelectedMunicipioObjs((atual) =>
-        atual.some((m) => m.id === municipio.id) ? atual : [...atual, municipio]
-      )
+      definirMunicipioUnico(municipio)
+      setSelectedMunicipioObjs([municipio])
     },
-    [selecionarMunicipio]
+    [definirMunicipioUnico]
   )
 
   const handleRemoveMunicipio = useCallback(
     (id) => {
-      selecionarMunicipio(id)
+      removerMunicipio(id)
+      setSelectedMunicipioObjs((atual) => atual.filter((m) => m.id !== id))
     },
-    [selecionarMunicipio]
+    [removerMunicipio]
   )
+
+  const handleSubmit = useCallback(() => {
+    buscarDadosDashboard()
+  }, [buscarDadosDashboard])
 
   const barData = useMemo(() => buildBarData(dataset), [dataset])
   const lineData = useMemo(() => buildLineData(dataset), [dataset])
@@ -134,22 +136,19 @@ function DashboardPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Dashboard</h1>
       <p className={styles.subtitle}>
-        Selecione municípios e indicadores para visualizar painéis e gráficos.
+        Selecione um município para visualizar seus principais indicadores.
       </p>
 
       <FilterBar
         municipioSuggestions={municipios}
-        municipioLoading={loading}
         onSearchMunicipio={buscarMunicipios}
         selectedMunicipios={selectedMunicipioObjs}
         onAddMunicipio={handleAddMunicipio}
         onRemoveMunicipio={handleRemoveMunicipio}
-        municipioMax={5}
-        selectedIndicadores={indicadores}
-        onChangeIndicadores={selecionarIndicadores}
-        periodo={periodo}
-        onChangePeriodo={selecionarPeriodo}
-        onSubmit={buscarDados}
+        onClearMunicipios={() => handleRemoveMunicipio(selectedMunicipioObjs[0]?.id)}
+        singleMunicipio
+        hideIndicadores
+        onSubmit={handleSubmit}
         submitting={loading}
       />
 
@@ -157,8 +156,9 @@ function DashboardPage() {
 
       {!hasData && !loading && (
         <EmptyState
+          icon={<BarChart3 size={48} strokeWidth={1.5} />}
           title="Nenhum dado selecionado"
-          description="Escolha ao menos um município e um indicador, depois clique em Consultar."
+          description="Escolha um município e clique em Consultar."
         />
       )}
 

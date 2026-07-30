@@ -29,16 +29,24 @@
 }
 
 .chipRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
   color: var(--color-primary);
-  font-size: var(--font-size-xs);
-  line-height: 1;
   border-radius: 50%;
-  padding: 2px;
+  transition: background var(--transition-fast), color var(--transition-fast);
 }
 
 .chipRemove:hover {
   background: var(--color-primary);
   color: var(--color-text-inverse);
+}
+
+.chipRemove:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 .clearAll {
